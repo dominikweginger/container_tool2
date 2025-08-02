@@ -1,1 +1,34 @@
-{}
+[
+  {
+    "id": "20ft-std",
+    "name": "20 ft Standard Container",
+    "inner_length_mm": 6000,
+    "inner_width_mm": 2300,
+    "inner_height_mm": 2350,
+    "door_height_mm": 2228
+  },
+  {
+    "id": "40ft-std",
+    "name": "40 ft Standard Container",
+    "inner_length_mm": 12000,
+    "inner_width_mm": 2300,
+    "inner_height_mm": 2393,
+    "door_height_mm": 2228
+  },
+  {
+    "id": "40ft-hc",
+    "name": "40 ft High Cube Container",
+    "inner_length_mm": 12000,
+    "inner_width_mm": 2300,
+    "inner_height_mm": 2698,
+    "door_height_mm": 2550
+  },
+  {
+    "id": "40ft-ot",
+    "name": "40 ft Open Top Container",
+    "inner_length_mm": 12000,
+    "inner_width_mm": 2300,
+    "inner_height_mm": 3000,
+    "door_height_mm": 2650
+  }
+]

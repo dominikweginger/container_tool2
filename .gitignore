@@ -1,0 +1,27 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Editor & OS Files
+.DS_Store
+Thumbs.db
+
+# Logs & Debug
+logs/
+*.log
+
+# Test results
+htmlcov/
+coverage.xml
+
+# Project artifacts
+*.clp
+*.pdf
+
+# VSCode settings
+.vscode/

@@ -1,0 +1,37 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest        # Zielsystem laut Plan ist Windows
+    strategy:
+      matrix:
+        python-version: ["3.13"]   # 3.13.5 noch nicht verfügbar
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt     # pytest, flake8, black, pytest-benchmark, pytest-qt …
+
+      - name: Static checks (Black & Flake8)
+        run: |
+          black --check src tests
+          flake8 src tests
+
+      - name: Run tests
+        run: pytest -q
+
+      # 👉 später: Benchmark-Gate, PyInstaller-Build, Artifacts zu Releases hinzufügen
