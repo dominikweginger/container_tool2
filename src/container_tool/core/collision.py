@@ -1,3 +1,7 @@
+"""
+container_tool.core.collision
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Kollisions‑ und Türhöhen‑Logik für das 2D‑Packing‑GUI.
 Das Modul ist **rein logisch** (kein GUI‑Import) und
 komplett *stateless*, sodass es gefahrlos aus

@@ -65,7 +65,7 @@ if not logger.handlers:  # verhindern, dass Handler doppelt gesetzt werden
 # Eigene Importe (late import vermeidet zirkuläre Abhängigkeiten beim Testen)
 # ──────────────────────────────────────────────────────────────────────────────
 from container_tool.gui.table_widget import TableWidget       # noqa: E402
-from container_tool.gui.canvas2d import Canvas2D              # noqa: E402
+from container_tool.gui.canvas_2d import Canvas2D              # noqa: E402
 from container_tool.io import io_clp                          # noqa: E402
 from container_tool.io.export import export_pdf               # noqa: E402
 
