@@ -3,6 +3,10 @@
 Unit-Tests für die Datenmodelle in src/container_tool/core/models.py
 -------------------------------------------------------------------
 Läuft mit `pytest` innerhalb weniger Millisekunden.
+
+Hinweis: Die frühere Abhängigkeit von `pytest-lazy-fixture` wurde entfernt.
+Fixture-Namen werden jetzt als Strings parametrisiert und erst zur
+Laufzeit via `request.getfixturevalue()` aufgelöst.
 """
 from __future__ import annotations
 
@@ -30,10 +34,10 @@ from container_tool.core.models import Box, Container, Project, Stack
 # --------------------------------------------------------------------------- #
 @pytest.fixture()
 def sample_container() -> Container:
-    """Minimal gültiger 40 ft-Container."""
+    """Minimal gültiger 40 ft‑Container."""
     return Container(
         id="40ft-std",
-        name="40 ft Standard",
+        name="40 ft Standard",
         inner_length_mm=12_000,
         inner_width_mm=2_300,
         inner_height_mm=2_393,
@@ -59,13 +63,13 @@ def box_0deg() -> Box:
 
 @pytest.fixture()
 def box_90deg() -> Box:
-    """Box mit 90°-Rotation."""
+    """Box mit 90°‑Rotation."""
     return Box(
         name="Box_B",
         length_mm=1_000,
         width_mm=800,
         height_mm=600,
-        weight_kg=0.0,  # bewusst 0 kg
+        weight_kg=0.0,  # bewusst 0 kg
         color_hex="#00FF00",
         pos_x_mm=50,
         pos_y_mm=75,
@@ -75,7 +79,7 @@ def box_90deg() -> Box:
 
 @pytest.fixture()
 def sample_stack() -> Stack:
-    """Stapel aus drei identischen Boxen (je 5 kg)."""
+    """Stapel aus drei identischen Boxen (je 5 kg)."""
     boxes: List[Box] = [
         Box(
             name=f"StackBox_{i}",
@@ -130,20 +134,20 @@ def test_box_from_dict_missing_weight():
 
 
 @pytest.mark.parametrize(
-    "box,expected_bbox",
+    "box_fixture_name, expected_bbox",
     [
-        (
-            pytest.lazy_fixture("box_0deg"),
-            (100, 200, 1100, 1000),  # x, y, x+L, y+B
-        ),
-        (
-            pytest.lazy_fixture("box_90deg"),
-            (50, 75, 850, 1075),  # x, y, x+B, y+L (Rot. 90°)
-        ),
+        ("box_0deg", (100, 200, 1100, 1000)),  # x, y, x+L, y+B
+        ("box_90deg", (50, 75, 850, 1075)),    # x, y, x+B, y+L (Rot. 90°)
     ],
 )
-def test_box_bbox(box, expected_bbox):
-    """bbox() muss Länge/Breite abhängig von rot_deg korrekt berechnen."""
+def test_box_bbox(request: pytest.FixtureRequest, box_fixture_name: str, expected_bbox):
+    """
+    bbox() muss Länge/Breite abhängig von rot_deg korrekt berechnen.
+
+    Wir übergeben nur den Namen der Fixture als String und lösen sie
+    innerhalb der Testfunktion auf (kein externes Plug‑in nötig).
+    """
+    box: Box = request.getfixturevalue(box_fixture_name)
     assert box.bbox() == expected_bbox
 
 
@@ -161,11 +165,7 @@ def test_project_metrics(sample_project):
         + sample_project.boxes[1].weight_kg
         + sample_project.boxes[2].total_weight_kg()
     )
-    total_boxes = (
-        1
-        + 1
-        + sample_project.boxes[2].box_count()
-    )
+    total_boxes = 1 + 1 + sample_project.boxes[2].box_count()
 
     assert pytest.approx(sample_project.total_weight_kg(), rel=1e-9) == total_weight
     assert (

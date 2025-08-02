@@ -66,8 +66,8 @@ if not logger.handlers:  # verhindern, dass Handler doppelt gesetzt werden
 # ──────────────────────────────────────────────────────────────────────────────
 from container_tool.gui.table_widget import TableWidget       # noqa: E402
 from container_tool.gui.canvas_2d import Canvas2D              # noqa: E402
-from container_tool.io import io_clp                          # noqa: E402
-from container_tool.io.export import export_pdf               # noqa: E402
+from container_tool.core import io_clp                         # noqa: E402
+from container_tool.export.pdf_export import export_pdf        # noqa: E402
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -138,8 +138,9 @@ class MainWindow(QMainWindow):
     # ..........................................................................
     # Initialisierung
     # ..........................................................................
-    def __init__(self) -> None:
+    def __init__(self, container_defs: dict[str, Any] | None = None) -> None:  # ← CHANGED
         super().__init__()
+        self._container_defs: dict[str, Any] = container_defs or {}            # ← CHANGED
         self.setWindowTitle("Container‑Ladetool")
 
         # ---------- zentrale Widgets --------------------------------------------------
@@ -228,9 +229,13 @@ class MainWindow(QMainWindow):
     # ..........................................................................
     def _load_container_types(self) -> list[str]:
         """
-        Lädt Containertypen aus *containers.json*; fällt bei Fehler
-        auf eine Standardliste zurück.
+        Lädt Containertypen aus übergebenen *container_defs* oder – falls leer –
+        aus *containers.json*; fällt bei Fehler auf eine Standardliste zurück.
         """
+        if self._container_defs:                                            # ← CHANGED
+            return [c["name"] if isinstance(c, dict) else c.name            # ← CHANGED
+                    for c in self._container_defs.values()]                 # ← CHANGED
+
         try:
             with open(self.CONTAINER_JSON_PATH, "r", encoding="utf-8") as fp:
                 data = json.load(fp)

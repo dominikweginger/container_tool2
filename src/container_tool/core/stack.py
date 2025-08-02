@@ -1,3 +1,6 @@
+"""
+src/container_tool/core/stack.py
+
 Implementiert die Stapel‑Logik für Container‑Packprojekte.
 
 Funktionen
@@ -19,7 +22,7 @@ from __future__ import annotations
 
 from typing import List
 
-from models import Box, Container, Stack, GeometryError
+from .models import Box, Container, Stack, GeometryError
 
 # ---------------------------------------------------------------------------#
 # Hilfsfunktionen                                                           #

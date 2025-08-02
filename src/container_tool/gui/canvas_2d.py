@@ -52,8 +52,7 @@ from PySide6.QtWidgets import (
 # ────────────────────────────────────────────────────────────────────────────────
 from container_tool.core.collision import check_collisions  # type: ignore
 from container_tool.core.stack import create_stack  # type: ignore
-from container_tool.models.box import Box  # type: ignore
-from container_tool.models.stack import Stack  # type: ignore
+from container_tool.core.models import Box, Stack
 
 
 # ────────────────────────────────────────────────────────────────────────────────

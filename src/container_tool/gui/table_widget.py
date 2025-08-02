@@ -40,7 +40,7 @@ from PySide6.QtWidgets import (
 # ---------------------------------------------------------------------------
 try:
     # Standard‑Import‑Pfad laut Projektplan – ggf. anpassen.
-    from container_tool.models import Box, Stack
+    from container_tool.core.models import Box, Stack
 except ModuleNotFoundError:  # Fallback für Autocompletion / Test‑Runner
     class Box:  # pragma: no cover
         def __init__(self, name, length_mm, width_mm, height_mm,
