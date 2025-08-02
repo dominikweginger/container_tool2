@@ -139,13 +139,7 @@ def create_stack(boxes: List[Box], container: Container) -> Stack:
 
     # Neuen Stapel erzeugen (Name: „Stack_<FirstBoxName>“)
     stack_name = f"Stack_{getattr(first, 'name', 'unnamed')}"
-    new_stack = Stack(
-        name=stack_name,
-        boxes=list(boxes),  # Kopie der Referenzen
-        pos_x_mm=first.pos_x_mm,
-        pos_y_mm=first.pos_y_mm,
-        height_mm=total_height,
-    )
+    new_stack = Stack(name=stack_name, _boxes=list(boxes))
     return new_stack
 
 
