@@ -7,8 +7,8 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from container_tool.window import MainWindow
-from container_tool import io_clp
+from container_tool.gui.window import MainWindow
+from container_tool.core import io_clp
 
 # --------------------------------------------------------------------------- #
 # Global logger (einzige erlaubte globale Variable)
