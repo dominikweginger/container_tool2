@@ -43,26 +43,6 @@ from PySide6.QtWidgets import (
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Logging (rotierender Handler – 7 Tage Retention)
-# ──────────────────────────────────────────────────────────────────────────────
-logger = logging.getLogger(__name__)
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE = LOG_DIR / "error.log"
-
-logger = logging.getLogger(__name__)
-if not logger.handlers:  # verhindern, dass Handler doppelt gesetzt werden
-    handler = logging.handlers.RotatingFileHandler(
-        LOG_FILE, maxBytes=1_000_000, backupCount=7, encoding="utf-8"
-    )
-    formatter = logging.Formatter(
-        "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
 # Eigene Importe (late import vermeidet zirkuläre Abhängigkeiten beim Testen)
 # ──────────────────────────────────────────────────────────────────────────────
 from container_tool.gui.table_widget import TableWidget       # noqa: E402
