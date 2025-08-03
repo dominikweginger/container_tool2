@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 # ──────────────────────────────────────────────────────────────────────────────
 # Logging (rotierender Handler – 7 Tage Retention)
 # ──────────────────────────────────────────────────────────────────────────────
-LOG_DIR = Path(__file__).resolve().parents[2] / "logs"
+logger = logging.getLogger(__name__)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE = LOG_DIR / "error.log"
 
