@@ -116,7 +116,20 @@ class BoxGraphicsItem(QGraphicsRectItem):
     def itemChange(self, change: "QGraphicsItem.GraphicsItemChange", value):
         if change == QGraphicsItem.ItemPositionHasChanged:
             # Label zentrieren (da ItemIgnoresTransformations)
+            # --- NEU: Szene-Koordinaten ins Datenmodell spiegeln ---
+            new_x_mm = int(self.x())
+            new_y_mm = int(self.y())
+            if isinstance(self._model, Stack):
+                for b in self._model:      # alle Boxen des Stapels
+                    b.pos_x_mm = new_x_mm
+                    b.pos_y_mm = new_y_mm
+            else:                          # einzelne Box
+                self._model.pos_x_mm = new_x_mm
+                self._model.pos_y_mm = new_y_mm
+
+            # (Label zentrieren bleibt wie bisher)
             rect = self.rect()
+
             self._text_item.setPos(rect.width() / 2 - self._text_item.boundingRect().width() / 2,
                                    rect.height() / 2 - self._text_item.boundingRect().height() / 2)
         return super().itemChange(change, value)
