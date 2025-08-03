@@ -83,6 +83,8 @@ class Box:
     width = property(lambda self: self.width_mm)
     height = property(lambda self: self.height_mm)
     weight = property(lambda self: self.weight_kg)
+    color = property(lambda self: self.color_hex)
+    z = property(lambda self: 0)
 
     # ---------------------------- Validierung ---------------------------- #
     def __post_init__(self) -> None:
@@ -208,6 +210,9 @@ class Stack:
     @property
     def height_mm(self) -> int:
         return self._boxes[0].height_mm
+
+    color = property(lambda self: self._boxes[0].color_hex)
+    z = property(lambda self: 0)
 
     # ------------------------- Geometrie ------------------------------- #
     def bbox(self) -> Tuple[int, int, int, int]:
@@ -362,6 +367,9 @@ class Project:
         )
     )
     _lock: threading.RLock = field(init=False, repr=False, default_factory=threading.RLock)
+    container_length = property(lambda self: self.container.inner_length_mm)
+    container_width = property(lambda self: self.container.inner_width_mm)
+    container_height = property(lambda self: self.container.inner_height_mm)
 
     # ----------------------- Thread-sichere Ops ------------------------- #
     def add(self, item: Union[Box, Stack]) -> None:
