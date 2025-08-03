@@ -139,13 +139,12 @@ class TableWidget(QTableWidget):
             color_hex = self._color_at_row(row)
 
             if stacked:
-                height = h_mm * qty
-                weight = weight_kg * qty
-                boxes.append(
-                    Stack(name=name,
-                          length_mm=l_mm, width_mm=w_mm, height_mm=height,
-                          weight_kg=weight, color_hex=color_hex)
-                )
+                single_boxes = [
+                    Box(name=f"{name}_{i+1}", length_mm=l_mm, width_mm=w_mm,
+                          height_mm=h_mm, weight_kg=weight_kg, color_hex=color_hex)
+                          for i in range(qty)
+                ]
+                boxes.append(Stack(name=name, _boxes=single_boxes))
             else:
                 for i in range(qty):
                     boxes.append(

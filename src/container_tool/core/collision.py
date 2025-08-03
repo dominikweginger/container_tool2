@@ -68,8 +68,8 @@ def is_within_container(obj: Union["Box", "Stack"], container: "Container") -> b
     """
     x0, y0, x1, y1 = _get_bbox(obj)
 
-    length = getattr(container, "inner_length", None) or getattr(container, "length", None)
-    width = getattr(container, "inner_width", None) or getattr(container, "width", None)
+    length = (getattr(container, "inner_length", None) or getattr(container, "length", None) or getattr(container, "inner_length_mm", None))
+    width = (getattr(container, "inner_width", None) or getattr(container, "width", None) or getattr(container, "inner_width_mm", None))
 
     if length is None or width is None:
         raise ValueError("Container muss 'inner_length/length' und 'inner_width/width' besitzen.")
@@ -152,7 +152,7 @@ def _get_bbox(obj: Union["Box", "Stack"]) -> BBox:
 
 def _get_height(obj: "Stack") -> float:
     """Liefert die absolute Höhe eines Stacks (mm)."""
-    return float(getattr(obj, "height", getattr(obj, "height_mm", 0.0)))
+    return float(obj.total_height_mm())
 
 
 def _is_stack(obj: Union["Box", "Stack"]) -> bool:  # duck‑typing‑Check

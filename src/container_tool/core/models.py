@@ -31,6 +31,9 @@ class Container:
     inner_width_mm: int
     inner_height_mm: int
     door_height_mm: int
+    # --- Kompatibilitäts‑Aliase für den PDF‑Export ---
+    length = property(lambda self: self.inner_length_mm)
+    width = property(lambda self: self.inner_width_mm)
 
     def __post_init__(self) -> None:
         if any(v <= 0 for v in (
@@ -73,6 +76,13 @@ class Box:
     pos_x_mm: int = 0
     pos_y_mm: int = 0
     rot_deg: int = 0  # 0 oder 90
+    # --- Kompatibilitäts-Aliase für den PDF-Export ---
+    x = property(lambda self: self.pos_x_mm)
+    y = property(lambda self: self.pos_y_mm)
+    length = property(lambda self: self.length_mm)
+    width = property(lambda self: self.width_mm)
+    height = property(lambda self: self.height_mm)
+    weight = property(lambda self: self.weight_kg)
 
     # ---------------------------- Validierung ---------------------------- #
     def __post_init__(self) -> None:

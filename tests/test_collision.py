@@ -115,7 +115,6 @@ def _make_stack(box_height_mm: int, count: int) -> Stack:
     ]
     stack = Stack(name="test_stack", _boxes=boxes)
     # Kollisions-Logik prüft `height` → Expose reale Stapelhöhe als Attribut
-    stack.height = stack.total_height_mm()
     return stack
 
 

@@ -172,6 +172,7 @@ class Canvas2D(QGraphicsView):
         self._scene = QGraphicsScene(self)
         self.setScene(self._scene)
         self._scene_name = scene_name.lower()
+        self._container_ref = None
 
         # Container‑Rahmen zeichnen
         self._container_rect_mm: Optional[QRectF] = container_inner_rect_mm
@@ -355,7 +356,12 @@ class Canvas2D(QGraphicsView):
         moving_rect_mm = self._item_rect_mm(moving)
         blocker_models = []
         for itm in others:
-            if check_collisions(moving.model, itm.model):  # type: ignore[arg-type]
+            ok, _ = check_collisions(               # richtiger Aufruf
+                candidate=moving.model,
+                placed=[itm.model],                 # Liste statt Einzelobjekt
+                container=self._container_ref,      # kann None sein (Wartebereich)
+            )
+            if not ok:                              # Kollision → Item rot markieren
                 itm.set_colliding(True)
                 blocker_models.append(itm)
             else:
@@ -462,3 +468,43 @@ class Canvas2D(QGraphicsView):
     @staticmethod
     def _item_rect_mm(item: BoxGraphicsItem) -> QRectF:
         return QRectF(item.pos().x(), item.pos().y(), item.rect().width(), item.rect().height())
+
+    def has_boxes(self) -> bool:
+        """Gibt *True* zurück, sobald mindestens ein Box‑Element existiert."""
+        return any(isinstance(itm, BoxGraphicsItem) for itm in self._scene.items())
+
+    def clear_boxes(self) -> None:
+        """Entfernt alle Box‑ bzw. Stack‑Grafiken aus der Szene."""
+        for itm in list(self._scene.items()):
+            if isinstance(itm, BoxGraphicsItem):
+                self._scene.removeItem(itm)
+        self.objectsChanged.emit([])
+
+    def add_boxes(
+        self,
+        models: List[Union[Box, Stack]],
+        color: QColor = QColor(120, 170, 255),
+    ):
+        """Fügt mehrere Modelle auf einmal hinzu und liefert ihre Grafik‑Objekte."""
+        items = [self.add_box(m, color) for m in models]
+        self.objectsChanged.emit(self.to_box_models())
+        return items
+
+    def serialize(self) -> List[dict]:
+        """Wandelt alle derzeit sichtbaren Modelle in Dictionaries um."""
+        return [m.to_dict() for m in self.to_box_models()]
+
+    def set_container_type(self, container_name: str) -> None:
+        """
+        Passt die Zeichenfläche an die Abmessungen des gewählten Containers an.
+        """
+        from container_tool.core import io_clp          # Late‑Import vermeidet Kreis‑Imports
+        defs = io_clp.load_containers_definitions()
+        for ct in defs.values():                       # Suche passenden Container
+            if getattr(ct, "name", "") == container_name:
+                self._container_ref = ct
+                new_rect = QRectF(0, 0, ct.inner_length_mm, ct.inner_width_mm)
+                self._scene.setSceneRect(new_rect)     # Szene vergrößern / verkleinern
+                self.fitInView(new_rect, Qt.KeepAspectRatio)  # Ansicht anpassen
+                return
+        raise ValueError(f"Containertyp {container_name!r} unbekannt")

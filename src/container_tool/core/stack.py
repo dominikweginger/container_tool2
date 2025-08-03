@@ -151,10 +151,10 @@ def add_to_stack(stack: Stack, box: Box, container: Container) -> Stack:
     * Wirft `GeometryError`, falls Stapeln nicht möglich ist.
     * Gibt dieselbe Stapel‑Instanz zurück (Fluent‑Style).
     """
-    if not stack.boxes:
+    if not stack._boxes:
         _raise_geometry("Ungültiger Stapel: enthält keine Boxen.")
 
-    reference_box = stack.boxes[0]
+    reference_box = stack._boxes[0]
 
     if not _dimensions_identical(reference_box, box):
         _raise_geometry("Box‑Abmessungen oder Rotation passen nicht zum bestehenden Stapel.")
@@ -167,9 +167,9 @@ def add_to_stack(stack: Stack, box: Box, container: Container) -> Stack:
         )
 
     # Höhe prüfen
-    if not _remaining_height_ok(stack.height_mm, box.height_mm, container.door_height_mm):
+    if not _remaining_height_ok(stack.total_height_mm(), box.height_mm, container.door_height_mm):
         _raise_geometry(
-            f"Neue Stapelhöhe ({stack.height_mm + box.height_mm} mm) "
+            f"Neue Stapelhöhe ({stack.total_height_mm() + box.height_mm} mm) "
             f"überschreitet die zulässige Türhöhe ({container.door_height_mm} mm)."
         )
 
@@ -178,7 +178,6 @@ def add_to_stack(stack: Stack, box: Box, container: Container) -> Stack:
     box.pos_y_mm = stack.pos_y_mm
 
     # Stapel aktualisieren
-    stack.boxes.append(box)
-    stack.height_mm += box.height_mm
+    stack._boxes.append(box)
 
     return stack
