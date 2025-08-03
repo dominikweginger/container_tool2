@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
+import os
 from pathlib import Path
 from typing import Callable, Any
 
@@ -321,8 +322,9 @@ class MainWindow(QMainWindow):
             return
 
         self._set_status("Projekt wird gespeichert …")
-        project_state = self._gather_project_state()
-        _run_in_thread(self, io_clp.save_clp, filename, project_state)
+        project = self._build_project_object()
+        _run_in_thread(self, io_clp.save_clp,
+                        project, filename, user=os.getlogin(), version="1.0.0")
 
     # -- Export / Abschluss -----------------------------------------------------
     def _on_export_project(self) -> None:
@@ -366,6 +368,34 @@ class MainWindow(QMainWindow):
             "container_boxes": self._container_canvas.serialize(),
             "waiting_boxes": self._waiting_canvas.serialize(),
         }
+
+    # ----------------------------------------------------------------------
+    # Privater Helfer: GUI‑Zustand ➜ Project‑Objekt
+    # ----------------------------------------------------------------------
+    def _build_project_object(self):
+        """
+        Erstellt aus dem aktuellen GUI‑Zustand ein Project‑Objekt,
+        wie es io_clp.save_clp() erwartet.
+        """
+        from container_tool.core import io_clp
+        from container_tool.core.models import Box, Stack, Project
+
+        state = self._gather_project_state()
+
+        # 1) Container‑Objekt ermitteln (Name ➜ Definition)
+        defs = io_clp.load_containers_definitions()
+        container = next(c for c in defs.values()
+                         if getattr(c, "name", "") == state["container_type"])
+
+        # 2) Box‑/Stack‑Instanzen aus den Canvas‑Daten erzeugen
+        boxes_raw = state["container_boxes"] + state["waiting_boxes"]
+        boxes = [
+            Box.from_dict(b) if b.get("type") == "box" else Stack.from_dict(b)
+            for b in boxes_raw
+        ]
+
+        # 3) Project zusammenstellen (Meta‑Infos fügt save_clp selbst hinzu)
+        return Project(container=container, boxes=boxes)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
