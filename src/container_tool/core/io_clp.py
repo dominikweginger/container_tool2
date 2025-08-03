@@ -265,16 +265,13 @@ def load_clp(path: str | Path) -> Project:
 
     # --- Container‑Definitionen --------------------------------------------
     container_defs = load_containers_definitions()
-    containers_raw = raw.get("containers", [])
-    if not isinstance(containers_raw, list):
-        raise ClpFormatError("'containers' muss eine Liste sein")
+    container_raw = raw.get("container")
+    if not isinstance(container_raw, dict):
+        raise ClpFormatError("'container' muss ein Objekt sein")
 
-    containers: list[Container] = []
-    for c_raw in containers_raw:
-        c = Container.from_dict(c_raw)  # type: ignore[attr-defined]
-        if c.id not in container_defs:  # type: ignore[attr-defined]
-            raise ContainerNotFoundError(f"Unbekannter Container‑Typ {c.id!r}")
-        containers.append(c)
+    container = Container.from_dict(container_raw)  # type: ignore[attr-defined]
+    if container.id not in container_defs:          # type: ignore[attr-defined]
+        raise ContainerNotFoundError(f"Unbekannter Container‑Typ {container.id!r}")
 
     # --- Boxes & Stacks -----------------------------------------------------
     boxes_raw = raw.get("boxes", [])
@@ -303,7 +300,7 @@ def load_clp(path: str | Path) -> Project:
         project = Project.from_dict(
             {
                 "meta": meta,
-                "containers": [c.to_dict() for c in containers],  # type: ignore[attr-defined]
+                "container": container.to_dict(),
                 "boxes": [b.to_dict() for b in boxes],  # type: ignore[attr-defined]
             }
         )
