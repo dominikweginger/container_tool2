@@ -2,7 +2,7 @@ from __future__ import annotations
 import datetime
 import threading
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterator, List, Tuple, Union
+from typing import Any, Dict, Iterator, List, Tuple, Union, ClassVar
 
 
 # --------------------------------------------------------------------------- #
@@ -169,7 +169,7 @@ class Box:
 class Stack:
     name: str
     _boxes: List[Box] = field(default_factory=list)
-    SNAP_TOLERANCE_MM: int = 10
+    SNAP_TOLERANCE_MM: ClassVar[int] = 10
 
     # ---------------------------- Validierung --------------------------- #
     def __post_init__(self) -> None:
@@ -404,7 +404,7 @@ class Project:
             return {
                 "container": self.container.to_dict(),
                 "boxes": [item.to_dict() for item in self.boxes],
-                "meta": self.meta.to_dict(),
+                "meta": self.meta.to_dict() if hasattr(self.meta, "to_dict") else dict(self.meta),
             }
 
     @classmethod

@@ -263,15 +263,26 @@ def load_clp(path: str | Path) -> Project:
     if "user" not in meta or not isinstance(meta["user"], str):
         raise ClpFormatError("Feld 'meta.user' fehlt oder ist kein String")
 
-    # --- Container‑Definitionen --------------------------------------------
+    # --- Container‑Definition(en) --------------------------------------------
     container_defs = load_containers_definitions()
-    container_raw = raw.get("container")
-    if not isinstance(container_raw, dict):
-        raise ClpFormatError("'container' muss ein Objekt sein")
 
-    container = Container.from_dict(container_raw)  # type: ignore[attr-defined]
-    if container.id not in container_defs:          # type: ignore[attr-defined]
-        raise ContainerNotFoundError(f"Unbekannter Container‑Typ {container.id!r}")
+    # Abwärts­kompatibilität:
+    #   • neues Format:  "container": { … }
+    #   • altes Format:  "containers": [ { … } ]
+    container_raw = raw.get("container")
+    if container_raw is None:
+        containers_list = raw.get("containers")
+        if isinstance(containers_list, list) and len(containers_list) == 1:
+            container_raw = containers_list[0]
+
+    if not isinstance(container_raw, dict):
+        raise ClpFormatError("'container' muss ein Objekt sein")
+
+    container_id = container_raw.get("id")
+    try:
+        container = container_defs[container_id]
+    except KeyError:
+        raise ContainerNotFoundError(f"Container‑Typ '{container_id}' unbekannt")
 
     # --- Boxes & Stacks -----------------------------------------------------
     boxes_raw = raw.get("boxes", [])
