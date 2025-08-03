@@ -131,7 +131,9 @@ class MainWindow(QMainWindow):
         self._container_canvas = Canvas2D(scene_name="container", parent=self)
 
         right_pane = QWidget()
-        right_layout = QVBoxLayout(right_pane, spacing=2, contentsMargins=(0, 0, 0, 0))
+        right_layout = QVBoxLayout(right_pane) # Nur das Eltern-Widget übergeben
+        right_layout.setSpacing(2)
+        right_layout.setContentsMargins(0, 0, 0, 0) # Ränder separat setzen
         right_layout.addWidget(self._waiting_canvas)
         right_layout.addWidget(self._container_canvas)
 
@@ -162,6 +164,12 @@ class MainWindow(QMainWindow):
         tb = QToolBar("Haupt‑Aktionen", self)
         tb.setMovable(False)
         self.addToolBar(tb)
+
+        # --- (1) neuer Button direkt nach der Containerauswahl -------------
+        act_add_row = QAction("Neue Zeile (+)", self)
+        act_add_row.setToolTip("Leere Tabellenzeile hinzufügen")
+        act_add_row.triggered.connect(self._table.add_row)
+        tb.addAction(act_add_row)
 
         # Containerauswahl (Dropdown):
         self._combo_container = QComboBox(tb)

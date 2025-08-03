@@ -9,7 +9,7 @@ from __future__ import annotations
 import io
 from collections import defaultdict
 from datetime import datetime
-from typing import List, Sequence
+from typing import List, Sequence, Optional
 
 from PIL import Image
 from reportlab.lib import colors
@@ -91,13 +91,14 @@ def _split_loaded_waiting(project: "Project") -> tuple[List["Box"], List["Box"]]
     return loaded, waiting
 
 
-def _draw_header_footer(c: canvas.Canvas, project_name: str) -> None:
-    """Draw header & footer on current page."""
+def _draw_header_footer(c: canvas.Canvas, project_name: Optional[str] = None) -> None:
+    """Draw header & footer on current page. If *project_name* is None, omit it."""
     pw, ph = A4
     m = 20 * mm
     ts = datetime.now().strftime("%Y-%m-%d %H:%M")
     c.setFont("Helvetica-Bold", 12)
-    c.drawString(m, ph - m, f"{project_name} – {ts}")
+    header_text = ts if not project_name else f"{project_name} – {ts}"
+    c.drawString(m, ph - m, header_text)
     c.setFont("Helvetica", 8)
     c.drawRightString(pw - m, m / 2, f"Seite {c.getPageNumber()}")
 
@@ -128,6 +129,8 @@ def export_pdf(project: "Project",
     """
     Create a PDF export for *project* at *path*.
     If images are None the function tries to import helper renderers.
+
+    The function overwrites an existing file at *path* without confirmation.
     """
     from importlib import import_module
 
@@ -146,7 +149,7 @@ def export_pdf(project: "Project",
     c = canvas.Canvas(path, pagesize=A4)
 
     # Page 1 – Images
-    _draw_header_footer(c, project.name)
+    _draw_header_footer(c)
     y = ph - m - 30
     for label, reader in (("Draufsicht (Top‑View)", top_r),
                           ("Seitenansicht (Side‑View)", side_r),
@@ -154,12 +157,12 @@ def export_pdf(project: "Project",
         y = _draw_labeled_image(c, label, reader, m, y, usable_w)
         if y < m + 300:
             c.showPage()
-            _draw_header_footer(c, project.name)
+            _draw_header_footer(c)
             y = ph - m - 30
     c.showPage()
 
     # Page 2 – Tables
-    _draw_header_footer(c, project.name)
+    _draw_header_footer(c)
     loaded, waiting = _split_loaded_waiting(project)
     tbl_loaded = _build_table(_aggregate_boxes(loaded))
     tbl_waiting = _build_table(_aggregate_boxes(waiting))
@@ -170,7 +173,7 @@ def export_pdf(project: "Project",
     y -= h + 30
     if y < m + h:           # start new page if not enough room
         c.showPage()
-        _draw_header_footer(c, project.name)
+        _draw_header_footer(c)
         y = ph - m - 30
     w, h = tbl_waiting.wrap(usable_w, ph)
     tbl_waiting.drawOn(c, m, y - h)

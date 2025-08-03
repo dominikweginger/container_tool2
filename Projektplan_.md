@@ -104,7 +104,7 @@ flowchart TD
   Canvas --> Coll[Core: Collision + Stack]
   Coll --OK--> Canvas
   Coll --Verstoß--> Red[Rot-Markierung]
-  buttons((6 Buttons)) -->|Events| Gen
+  buttons((6 Buttons)) -->|Events| Gen - Ein Button zur Erstellung einer zusätzlichen Kiste ist OK.
   buttons -->|Load/Save| IO[.clp-IO]
   buttons -->|Export| PDF
   Canvas --> PDF
