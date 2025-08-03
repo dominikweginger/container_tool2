@@ -191,8 +191,8 @@ def _cells_for_bbox(bbox: BBox) -> List[Tuple[int, int]]:
     x0, y0, x1, y1 = bbox
     x_start = int(x0 // _CELL_SIZE)
     y_start = int(y0 // _CELL_SIZE)
-    x_end = int((x1) // _CELL_SIZE)
-    y_end = int((y1) // _CELL_SIZE)
+    x_end = int((x1 - 1e-9) // _CELL_SIZE)
+    y_end = int((y1 - 1e-9) // _CELL_SIZE)
 
     return [(ix, iy) for ix in range(x_start, x_end + 1) for iy in range(y_start, y_end + 1)]
 
