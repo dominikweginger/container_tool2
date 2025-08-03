@@ -394,7 +394,11 @@ class Canvas2D(QGraphicsView):
             return False
 
         # Stack erzeugen
-        new_stack = create_stack(best_target.model, moving.model)  # type: ignore[arg-type]
+        new_stack = create_stack(
+            [best_target.model, moving.model],   # ← Liste mit 2 Boxen
+            self._container_ref                  # ← Container-Referenz
+        )
+
         # Alte Items entfernen & neues an Ziel‑Pos einfügen
         pos = best_target.pos()
         self._scene.removeItem(best_target)
