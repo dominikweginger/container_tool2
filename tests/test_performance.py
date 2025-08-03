@@ -91,7 +91,7 @@ def test_check_collisions_under_50ms(benchmark, sample_scene):
         check_collisions(candidate, placed, container)
 
     result = benchmark(_run)
-    median_ms = result.stats["median"] * 1_000  # seconds → ms
+    median_ms = benchmark.stats["median"] * 1_000  # seconds → ms
     assert median_ms < 50, f"Median {median_ms:.2f} ms exceeds 50 ms"
 
 
@@ -122,7 +122,7 @@ def test_canvas_zoom_performance(benchmark):
             canvas.scale(0.9, 0.9)
 
     result = benchmark(_zoom)
-    total_s = result.stats["mean"]              # seconds for 100 ops
+    total_s = benchmark.stats["mean"]              # seconds for 100 ops
     fps = 100 / total_s if total_s else float("inf")
     latency_ms = (total_s / 100) * 1_000
 
